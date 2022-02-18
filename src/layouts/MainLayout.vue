@@ -21,8 +21,10 @@
           >
             <template v-slot:label>
               <div class="row items-center no-wrap">
-                <q-icon left name="map" />
-                <div class="text-center">
+                <q-avatar color="white" size="sm">
+                    <img src="../assets/networks/1.svg">
+                  </q-avatar>
+                <div class="text-center q-ml-sm">
                   Ethereum
                 </div>
               </div>
@@ -31,20 +33,28 @@
             <q-list>
               <q-item clickable v-close-popup @click="onItemClick">
                 <q-item-section avatar>
-                  <q-avatar icon="folder" color="primary" text-color="white" />
+                  <q-avatar color="white" text-color="white" size="md">
+                    <img src="../assets/networks/1.svg">
+                  </q-avatar>
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>Ethereum</q-item-label>
+                  <q-item-label caption>Metamask</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-icon name="check" color="white" />
                 </q-item-section>
               </q-item>
 
               <q-item clickable v-close-popup @click="onItemClick">
                 <q-item-section avatar>
-                  <q-avatar icon="assignment" color="secondary" text-color="white" />
+                  <q-avatar color="white" text-color="white" size="md">
+                    <img src="../assets/networks/solana.svg">
+                  </q-avatar>
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>Vacation</q-item-label>
-                  <q-item-label caption>February 22, 2016</q-item-label>
+                  <q-item-label>Solana</q-item-label>
+                  <q-item-label caption>Phantom</q-item-label>
                 </q-item-section>
                 <q-item-section side>
                   <q-icon name="check" color="white" />

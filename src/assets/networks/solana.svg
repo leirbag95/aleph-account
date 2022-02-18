@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.907" y1="1.512" x2="0.355" y2="-3.91" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#00ffa3"/>
+      <stop offset="1" stop-color="#dc1fff"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="0.666" y1="5.175" x2="0.114" y2="-0.247" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient-3" x1="0.786" y1="3.356" x2="0.234" y2="-2.067" xlink:href="#linear-gradient"/>
+    <clipPath id="clip-Web_1920_53">
+      <rect width="1024" height="1024"/>
+    </clipPath>
+  </defs>
+  <g id="Web_1920_53" data-name="Web 1920 – 53" clip-path="url(#clip-Web_1920_53)">
+    <g id="solana-sol-logo" transform="translate(159.01 235.354)">
+      <path id="Tracé_20" data-name="Tracé 20" d="M114.686,240.845a23.1,23.1,0,0,1,16.331-6.745H694.426a11.538,11.538,0,0,1,8.165,19.7l-111.3,111.3a23.1,23.1,0,0,1-16.331,6.745H11.554a11.538,11.538,0,0,1-8.165-19.7Z" transform="translate(0 181.445)" fill="url(#linear-gradient)"/>
+      <path id="Tracé_21" data-name="Tracé 21" d="M114.686,6.745A23.736,23.736,0,0,1,131.016,0H694.426a11.538,11.538,0,0,1,8.165,19.7L591.294,131a23.1,23.1,0,0,1-16.331,6.745H11.554a11.538,11.538,0,0,1-8.165-19.7Z" transform="translate(0)" fill="url(#linear-gradient-2)"/>
+      <path id="Tracé_22" data-name="Tracé 22" d="M591.294,123.045a23.1,23.1,0,0,0-16.331-6.745H11.554A11.538,11.538,0,0,0,3.388,136l111.3,111.3a23.1,23.1,0,0,0,16.331,6.745H694.426a11.538,11.538,0,0,0,8.165-19.7Z" transform="translate(0 90.141)" fill="url(#linear-gradient-3)"/>
+    </g>
+  </g>
+</svg>

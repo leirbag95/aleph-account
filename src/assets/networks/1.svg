@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_20" data-name="Rectangle 20" width="829" height="829" transform="translate(253 214.121)" fill="#fff" stroke="#707070" stroke-width="1"/>
+    </clipPath>
+    <clipPath id="clip-Web_1920_53">
+      <rect width="1024" height="1024"/>
+    </clipPath>
+  </defs>
+  <g id="Web_1920_53" data-name="Web 1920 – 53" clip-path="url(#clip-Web_1920_53)">
+    <g id="Groupe_de_masques_1" data-name="Groupe de masques 1" transform="translate(-155 -116.121)" clip-path="url(#clip-path)">
+      <g id="_1" data-name="1" transform="translate(413.126 214.018)">
+        <path id="Tracé_14" data-name="Tracé 14" d="M155.676,0l-5.563,18.908V567.571l5.563,5.553L410.359,422.582Z" transform="translate(99.006)" fill="#343434"/>
+        <path id="Tracé_15" data-name="Tracé 15" d="M254.683,0,0,422.582,254.683,573.126V0Z" fill="#8c8c8c"/>
+        <path id="Tracé_16" data-name="Tracé 16" d="M154.711,434.209l-3.135,3.821V633.476l3.135,9.155,254.837-358.89Z" transform="translate(99.971 187.139)" fill="#3c3c3b"/>
+        <path id="Tracé_17" data-name="Tracé 17" d="M254.683,642.631V434.206L0,283.739Z" transform="translate(0 187.138)" fill="#8c8c8c"/>
+        <path id="Tracé_18" data-name="Tracé 18" d="M153.465,451.185,408.145,300.645l-254.68-115.76Z" transform="translate(101.216 121.939)" fill="#141414"/>
+        <path id="Tracé_19" data-name="Tracé 19" d="M0,300.644,254.68,451.186v-266.3Z" transform="translate(0 121.938)" fill="#393939"/>
+      </g>
+    </g>
+  </g>
+</svg>
