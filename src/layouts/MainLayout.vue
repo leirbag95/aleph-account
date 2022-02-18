@@ -13,6 +13,45 @@
             </span>
         </q-toolbar-title>
         <q-space />
+        <q-btn-dropdown
+            size="md"
+            class="q-mr-md"
+            split
+            color="primary"
+          >
+            <template v-slot:label>
+              <div class="row items-center no-wrap">
+                <q-icon left name="map" />
+                <div class="text-center">
+                  Ethereum
+                </div>
+              </div>
+            </template>
+
+            <q-list>
+              <q-item clickable v-close-popup @click="onItemClick">
+                <q-item-section avatar>
+                  <q-avatar icon="folder" color="primary" text-color="white" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Ethereum</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item clickable v-close-popup @click="onItemClick">
+                <q-item-section avatar>
+                  <q-avatar icon="assignment" color="secondary" text-color="white" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Vacation</q-item-label>
+                  <q-item-label caption>February 22, 2016</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-icon name="check" color="white" />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
         <q-btn-group class="shadow-1 bg-aleph-radial">
           <q-btn v-if="!account" size="md" class="bg-aleph-radial text-white" @click="web3Connect">Connect to a wallet</q-btn>
           <q-btn v-if="account" class="text-white">
@@ -87,6 +126,7 @@
 <script>
 import { ellipseAddress } from '../helpers/utilities'
 import { ethers } from 'ethers'
+import networks from '../helpers/networks.json'
 
 import { mapState } from 'vuex'
 import {
@@ -253,6 +293,7 @@ export default {
     async update_eth_account () {
       let account = await ethereum.from_provider(window.ethereum)
       this.$store.commit('set_account', account)
+      await this.getCurrentNetwork()
     },
     async web3Connect () {
       let provider = null
@@ -282,6 +323,10 @@ export default {
         await this.update_eth_account()
         await this.update_distributions()
       })
+    },
+
+    async getCurrentNetwork () {
+      console.log('network', await this.account.provider, networks)
     }
   },
   created () {
