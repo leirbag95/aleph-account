@@ -14,6 +14,7 @@
         </q-toolbar-title>
         <q-space />
         <q-btn-dropdown
+            v-show="account"
             size="md"
             class="q-mr-md"
             split
@@ -22,7 +23,7 @@
             <template v-slot:label>
               <div class="row items-center no-wrap">
                 <q-avatar color="white" size="sm">
-                    <img src="../assets/networks/1.svg">
+                    <img :src="require('../assets/networks/' + 1 + '.svg')">
                   </q-avatar>
                 <div class="text-center q-ml-sm">
                   Ethereum
@@ -31,33 +32,15 @@
             </template>
 
             <q-list>
-              <q-item clickable v-close-popup @click="onItemClick">
+              <q-item clickable v-close-popup @click="switchNetwork(network.chainId)" v-for="network in networks" :key="network.chainId">
                 <q-item-section avatar>
                   <q-avatar color="white" text-color="white" size="md">
-                    <img src="../assets/networks/1.svg">
+                    <img :src="require('../assets/networks/' + network.chainId + '.svg')">
                   </q-avatar>
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>Ethereum</q-item-label>
-                  <q-item-label caption>Metamask</q-item-label>
-                </q-item-section>
-                <q-item-section side>
-                  <q-icon name="check" color="white" />
-                </q-item-section>
-              </q-item>
-
-              <q-item clickable v-close-popup @click="onItemClick">
-                <q-item-section avatar>
-                  <q-avatar color="white" text-color="white" size="md">
-                    <img src="../assets/networks/solana.svg">
-                  </q-avatar>
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>Solana</q-item-label>
-                  <q-item-label caption>Phantom</q-item-label>
-                </q-item-section>
-                <q-item-section side>
-                  <q-icon name="check" color="white" />
+                  <q-item-label>{{network.name}}</q-item-label>
+                  <q-item-label caption>{{network.wallet}}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -136,8 +119,7 @@
 <script>
 import { ellipseAddress } from '../helpers/utilities'
 import { ethers } from 'ethers'
-import networks from '../helpers/networks.json'
-
+import Networks from '../helpers/networks.json'
 import { mapState } from 'vuex'
 import {
   ethereum, posts
@@ -178,6 +160,10 @@ export default {
         value = value + item.content.size
       }
       return value / (1024 ** 2)
+    },
+    async getCurrentNetwork () {
+      console.log(await window.web3.currentProvider)
+      return await window.web3.currentProvider
     }
   }),
   watch: {
@@ -187,7 +173,9 @@ export default {
   },
   data () {
     return {
+      selectedNetwork: 1,
       ellipseAddress: ellipseAddress,
+      networks: Networks,
       left: false,
       search: '',
       storage: 0,
@@ -335,8 +323,15 @@ export default {
       })
     },
 
-    async getCurrentNetwork () {
-      console.log('network', await this.account.provider, networks)
+    async switchNetwork (chainId) {
+      try {
+        await window.web3.currentProvider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: ethers.utils.hexlify(chainId) }]
+        })
+      } catch (error) {
+        alert(error.message)
+      }
     }
   },
   created () {

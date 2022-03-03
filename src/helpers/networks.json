@@ -1,6 +1,17 @@
-{
-    "1": {
+[
+    {
         "name": "Ethereum",
-        "chainId": 1
+        "chainId": 1,
+        "wallet": "Metamask"
+    },
+    {
+        "name": "Avalanche",
+        "chainId": 43114,
+        "wallet": "Metamask"
+    },
+    {
+        "name": "Binance Smart Chain",
+        "chainId": 56,
+        "wallet": "Metamask"
     }
-}
+]
