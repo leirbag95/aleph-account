@@ -18,21 +18,21 @@
             size="md"
             class="q-mr-md"
             split
-            color="primary"
+            :color="selectedNetwork.chainId > 0 ? 'primary' : 'red'"
           >
             <template v-slot:label>
               <div class="row items-center no-wrap">
-                <q-avatar color="white" size="sm">
-                    <img :src="require('../assets/networks/' + 1 + '.svg')">
+                <q-avatar size="sm">
+                    <img :src="require('../assets/networks/' + selectedNetwork.chainId + '.svg')">
                   </q-avatar>
                 <div class="text-center q-ml-sm">
-                  Ethereum
+                  {{selectedNetwork.name}}
                 </div>
               </div>
             </template>
 
             <q-list>
-              <q-item clickable v-close-popup @click="switchNetwork(network.chainId)" v-for="network in networks" :key="network.chainId">
+              <q-item clickable v-close-popup @click="switchNetwork(network)" v-for="network in networks" :key="network.chainId">
                 <q-item-section avatar>
                   <q-avatar color="white" text-color="white" size="md">
                     <img :src="require('../assets/networks/' + network.chainId + '.svg')">
@@ -160,10 +160,6 @@ export default {
         value = value + item.content.size
       }
       return value / (1024 ** 2)
-    },
-    async getCurrentNetwork () {
-      console.log(await window.web3.currentProvider)
-      return await window.web3.currentProvider
     }
   }),
   watch: {
@@ -173,9 +169,13 @@ export default {
   },
   data () {
     return {
-      selectedNetwork: 1,
       ellipseAddress: ellipseAddress,
       networks: Networks,
+      selectedNetwork: {
+        name: 'Wrong Network',
+        chainId: -1,
+        wallet: 'Metamask'
+      },
       left: false,
       search: '',
       storage: 0,
@@ -291,7 +291,13 @@ export default {
     async update_eth_account () {
       let account = await ethereum.from_provider(window.ethereum)
       this.$store.commit('set_account', account)
-      await this.getCurrentNetwork()
+    },
+    async update_network () {
+      window.ethereum.on('chainChanged', async (_chainId) => {
+        await this.getCurrentNetwork(parseInt(_chainId))
+        await this.update_eth_account()
+        await this.update_distributions()
+      })
     },
     async web3Connect () {
       let provider = null
@@ -322,22 +328,38 @@ export default {
         await this.update_distributions()
       })
     },
-
-    async switchNetwork (chainId) {
+    getCurrentNetwork (_chainId) {
+      this.selectedNetwork = {
+        name: 'Wrong Network',
+        chainId: -1,
+        wallet: 'Metamask'
+      }
+      this.networks.forEach(element => {
+        if (element.chainId === parseInt(_chainId)) {
+          this.selectedNetwork = element
+        }
+      })
+    },
+    async switchNetwork (network) {
       try {
         await window.web3.currentProvider.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: ethers.utils.hexlify(chainId) }]
+          params: [{ chainId: ethers.utils.hexlify(parseInt(network.chainId)).replace('0x0', '0x') }]
         })
+        this.selectedNetwork = network
       } catch (error) {
         alert(error.message)
       }
     }
   },
-  created () {
+  async created () {
     this.$store.dispatch('connect_provider')
     this.update_distributions()
+    this.update_network()
     this.prepare_distributions_feed()
+
+    let currentNetwork = await window.web3.currentProvider.networkVersion
+    this.getCurrentNetwork(currentNetwork)
   }
 }
 </script>
