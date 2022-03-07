@@ -18,7 +18,7 @@
             size="md"
             class="q-mr-md"
             split
-            :color="selectedNetwork.chainId > 0 ? 'primary' : 'red'"
+            :color="selectedNetwork.chainId >= 0 ? 'primary' : 'red'"
           >
             <template v-slot:label>
               <div class="row items-center no-wrap">
@@ -288,8 +288,10 @@ export default {
       }
       this.last_distribution = last_distribution
     },
-    async update_eth_account () {
-      let account = await ethereum.from_provider(window.ethereum)
+    async update_eth_account (account) {
+      if (!account) {
+        account = await ethereum.from_provider(window.ethereum)
+      }
       this.$store.commit('set_account', account)
     },
     async update_network () {
@@ -340,15 +342,39 @@ export default {
         }
       })
     },
+    /**
+     * Change of networks according to the environment and the selected network
+     * @param network is an object with all the information of the network
+    */
     async switchNetwork (network) {
-      try {
-        await window.web3.currentProvider.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: ethers.utils.hexlify(parseInt(network.chainId)).replace('0x0', '0x') }]
-        })
-        this.selectedNetwork = network
-      } catch (error) {
-        alert(error.message)
+      if (network.env === 'evm') {
+        try {
+          await window.web3.currentProvider.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: ethers.utils.hexlify(parseInt(network.chainId)).replace('0x0', '0x') }]
+          })
+          this.selectedNetwork = network
+          await this.update_eth_account()
+        } catch (error) {
+          alert(error.message)
+        }
+      } else if (network.env === 'solana') {
+        const isPhantomInstalled = window.solana && window.solana.isPhantom
+        if (isPhantomInstalled) {
+          try {
+            const resp = await window.solana.connect()
+            resp.publicKey.toString()
+            if (window.solana.isConnected) {
+              this.selectedNetwork = network
+
+              window.solana.address = resp.publicKey.toString()
+              await this.update_eth_account(window.solana)
+            }
+          } catch (err) {
+            alert(err.message)
+          }
+        }
+        await this.update_distributions()
       }
     }
   },

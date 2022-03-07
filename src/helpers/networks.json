@@ -2,16 +2,25 @@
     {
         "name": "Ethereum",
         "chainId": 1,
-        "wallet": "Metamask"
+        "wallet": "metamask",
+        "env": "evm"
     },
     {
         "name": "Avalanche",
         "chainId": 43114,
-        "wallet": "Metamask"
+        "wallet": "metamask",
+        "env": "evm"
     },
     {
         "name": "Binance Smart Chain",
         "chainId": 56,
-        "wallet": "Metamask"
+        "wallet": "metamask",
+        "env": "evm"
+    },
+    {
+        "name": "Solana",
+        "chainId": 0,
+        "wallet": "phantom",
+        "env": "solana"
     }
 ]

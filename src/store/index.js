@@ -23,6 +23,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     erc20_address: '0x27702a26126e0B3702af63Ee09aC4d1A084EF628',
+    spl_address: 'CsZ5LZkDS7h9TDKjrbL7VAwQZ9nsRu8vJLhRYfmGaN8K',
     // monitor_address: '0x86bfBC59a1d1D82D2596fdeB02538fDe0426faD2', // test
     monitor_address: '0xa1B3bb7d2332383D96b7796B908fB7f7F3c2Be10',
     sender_address: '0x3a5CC6aBd06B601f4654035d125F9DD2FC992C25',
