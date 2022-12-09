@@ -185,7 +185,9 @@ export default {
     total_used (state) {
       let value = 0
       for (let item of state.stored) {
-        value = value + item.content?.size
+        if (item.content) {
+          value += item.content.size
+        }
       }
       return value / (1024 ** 2)
     }

@@ -4,7 +4,6 @@
       alt="Quasar logo"
       src="~assets/quasar-logo-full.svg"
     >
-    aaa
     {{balance_info}}
     {{account}}
   </q-page>
