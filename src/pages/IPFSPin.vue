@@ -405,7 +405,7 @@ export default {
         address: this.account.address,
         time: timestamp,
         hashes: [item.item_hash],
-        reason: item.reason.length > 0 ? item.reason : 'None'
+        reason: item.reason?.length > 0 ? item.reason : 'None'
       }
       const message = {
         chain: item.chain,
@@ -438,7 +438,6 @@ export default {
           this.loading = false
         })
 
-      this.$emit('created', false)
       this.loading = false
     }
   },
