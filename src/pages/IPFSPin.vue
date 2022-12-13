@@ -34,9 +34,9 @@
           <div class="text-body2 q-mt-md">You are about to delete a file with the following CID:</div>
           <div class="text-body1 text-weight-bold q-my-md">{{ selected_message.content?.item_hash }}</div>
           <div class="text-body2">This file stored on IPFS will be unpinned from the node.</div>
-          <div class="text-body2 q-my-md">Indicate the reason why you wish to remove this message.</div>
+          <div class="text-body2 q-my-md">Leave a note for future reference. (Optional)</div>
           <div class="text-body2">
-            <q-input ref="delete_field" standout v-model="selected_message.reason" label="Type your reason here" />
+            <q-input ref="delete_field" standout v-model="selected_message.reason" label="Enter note" />
           </div>
           <div class="text-body2 q-mt-md">In order to confirm your action, please enter <span class="text-weight-bold">
               DELETE</span> in capital letters.</div>
@@ -48,7 +48,7 @@
         </q-card-section>
 
         <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="Cancel" v-close-popup />
+          <q-btn flat label="Cancel" color="grey" v-close-popup />
           <q-btn color="aleph-radial" label="Delete" :disable="delete_field !== 'DELETE'" :loading="loading"
             @click="forgetMessage(selected_message)" />
         </q-card-actions>

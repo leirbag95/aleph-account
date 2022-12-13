@@ -19,7 +19,10 @@
     <div class="q-mb-md" v-if="account">
       <div class="row justify-between">
         <div class="row justify-start">
-          <q-toggle v-model="showDeletedMessage" label="Show Deleted Programs"/>
+          <q-tabs v-model="tab">
+            <q-tab name="published" label="Published" />
+            <q-tab name="deleted" label="Deleted" />
+          </q-tabs>
         </div>
         <div class="row justify-end">
           <q-input standout v-model="search" @keydown.enter.prevent="reloadVM()" dense
@@ -38,10 +41,10 @@
     <div v-if="account">
       <!-- start: active vm -->
       <div class="q-mb-sm" v-show="!loading">
-        <span v-if="showDeletedMessage" class="text-caption">{{this.programs.length}} programs ({{removeMessageCount}} deleted)</span>
-        <span v-else class="text-caption">{{(this.programs.length - removeMessageCount)}} programs</span>
+        <span v-if="tab === 'deleted'" class="text-caption">{{removeMessageCount}} deleted programs.</span>
+        <span v-else class="text-caption">{{(programs.length - removeMessageCount)}} published programs</span>
       </div>
-      <VMTable :data="programs" :account="account" :loading="loading" :showDeletedMessage="showDeletedMessage">
+      <VMTable :data="programs" :account="account" :loading="loading" :showDeletedMessage="tab === 'deleted'">
       </VMTable>
       <!-- end: actives vm -->
     </div>
@@ -77,7 +80,7 @@ export default {
       showCreateProgram: false,
       id: '',
       agentVersion: '',
-      tab: 'active'
+      tab: 'published'
     }
   },
   methods: {
@@ -91,17 +94,16 @@ export default {
       this.removeMessageCount = 0
       var params = {
         addresses: [this.account.address],
-        pagination: 1000,
         message_type: 'PROGRAM'
       }
       if (this.search.length > 0) {
         params.hashes = [this.search]
       }
+
       await messages.get_messages(params).then(async (response) => {
         this.programs = response.messages
         for (var i = 0; i < this.programs.length; i++) {
           let tx = this.programs[i].content?.code.ref
-          console.log(this.programs[i].forgotten_by)
           if (this.programs[i].forgotten_by) {
             this.removeMessageCount += 1
           }
@@ -114,7 +116,6 @@ export default {
               this.programs[i].storeObj = response.messages[0].content
             }).catch((err) => {
               this.loading = false
-              console.log(err)
               this.$q.notify({
                 type: 'negative',
                 message: `ERROR: ${err.message}`
@@ -125,7 +126,6 @@ export default {
         this.loading = false
       }).catch((err) => {
         this.loading = false
-        console.log(err)
         this.$q.notify({
           type: 'negative',
           message: `ERROR: ${err.message}`

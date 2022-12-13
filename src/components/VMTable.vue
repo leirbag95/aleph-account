@@ -5,9 +5,9 @@
         <q-card-section>
           <div class="text-h6">Are you sure?</div>
           <div class="text-body2 q-mt-md">You are about to delete a program</div>
-          <div class="text-body2 q-my-md">Indicate the reason why you wish to remove this message.</div>
+          <div class="text-body2 q-my-md">Leave a note for future reference. (Optional)</div>
           <div class="text-body2">
-            <q-input ref="delete_field" standout v-model="selected_message.reason" label="Type your reason here" />
+            <q-input ref="delete_field" standout v-model="selected_message.reason" label="Enter note" />
           </div>
           <div class="text-body2 q-mt-md">In order to confirm your action, please enter <span class="text-weight-bold">
               DELETE</span> in capital letters.</div>
@@ -19,27 +19,49 @@
         </q-card-section>
 
         <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="Cancel" v-close-popup />
+          <q-btn flat label="Cancel" v-close-popup color="grey" hover="white" />
           <q-btn color="aleph-radial" label="Delete" :disable="delete_field !== 'DELETE'" :loading="loading"
             @click="forgetMessage(selected_message)" />
         </q-card-actions>
       </q-card>
     </q-dialog>
     <div v-if="!loading">
-      <q-expansion-item v-for="item of data" class="overflow-hidden rounded-borders q-mb-md" :key="item?.item_hash"
-        :label="getProgramLabel(item)" icon="computer" expand-icon-class="text-white" v-show="showDeletedMessage ? true : item.content"
-        :header-class="item.forgotten_by ? 
-        'text-orange ' + ($q.dark.isActive ? 'bg-dark-40' : 'bg-aleph-radial')
-        : 'bg-expand text-white ' + ($q.dark.isActive ? 'bg-dark-40' : 'bg-aleph-radial')" flat>
-        <q-card class="bg-card-expand rounded-borders" :bordered="!$q.dark.isActive">
+      <q-expansion-item
+        v-for="item of data"
+        class="overflow-hidden rounded-borders q-mb-md"
+        :key="item?.item_hash"
+        :label="getProgramLabel(item)"
+        expand-icon-class="text-white"
+        v-show="showDeletedMessage ? item.content === null : item.content"
+        :header-class="'bg-expand text-white ' + ($q.dark.isActive ? 'bg-dark-40' : 'bg-aleph-radial')"
+        flat
+      >
+      <template v-slot:header>
+        <q-item-section avatar>
+          <q-icon :name="item.forgotten_by ? 'delete' : 'computer'" />
+        </q-item-section>
+        <q-item-section>
+          <span class="lt-md">{{getProgramLabel(item, true)}}</span>
+          <span class="gt-sm">{{getProgramLabel(item)}}</span>
+        </q-item-section>
+      </template>
+        <q-card  class="bg-card-expand rounded-borders" :bordered="!$q.dark.isActive">
           <q-card-section horizontal>
             <q-list class="col q-my-sm">
+              <q-item v-show="!item.forgotten_by && !('extra_fields' in item.content) && item.content?.metadata?.name">
+                <q-item-section>
+                  <q-item-label caption>Name</q-item-label>
+                  <q-item-label>
+                    {{item.content?.metadata?.name}}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
               <q-item>
                 <q-item-section>
                   <q-item-label caption>Item Hash</q-item-label>
                   <q-item-label>
-                    {{ item?.item_hash }}
-                    <q-btn @click="copyToClipboard(item?.item_hash)" flat round icon="content_copy" size="sm" />
+                    {{ellipseAddress(item.item_hash)}}
+                    <q-btn @click="copyToClipboard(item.item_hash)" flat round icon="content_copy" size="sm"/>
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -103,7 +125,7 @@
 
 <script>
 
-import { convertTimestamp } from '../helpers/utilities'
+import { convertTimestamp, ellipseAddress } from '../helpers/utilities'
 import { broadcast, ethereum, solana } from 'aleph-js'
 import { copyToClipboard } from 'quasar'
 const shajs = require('sha.js')
@@ -122,6 +144,7 @@ export default {
   data() {
     return {
       convertTimestamp: convertTimestamp,
+      ellipseAddress: ellipseAddress,
       copyToClipboard: copyToClipboard,
       filter: '',
       columns: [
@@ -138,7 +161,6 @@ export default {
       delete_field: ''
     }
   },
-
   methods: {
     delete_rules(val) {
       return new Promise((resolve, reject) => {
@@ -242,16 +264,16 @@ export default {
         })
     },
 
-    getProgramLabel(program) {
+    getProgramLabel (program, ellipse = false) {
       if (program.content === null) {
-        return `(DELETED) ${program.item_hash}`
+        return ellipse ? `${ellipseAddress(program.item_hash)}` : program.item_hash
       }
-      if (!('extra_fields' in program.content)) {
-        return program.item_hash
-      } else if (!('program_name' in program.content.extra_fields)) {
-        return program.item_hash
-      } else if (program.content.extra_fields.program_name.length === 0) {
-        return program.item_hash
+      if (!('extra_fields' in program?.content)) {
+        if (program.content?.metadata?.name) {
+          return `${program.content?.metadata?.name} (${ellipseAddress(program.item_hash)})`
+        } else {
+          return ellipse ? ellipseAddress(program.item_hash) : program.item_hash
+        }
       }
       return program.content.extra_fields.program_name
     }
