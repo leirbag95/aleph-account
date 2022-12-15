@@ -198,6 +198,7 @@ export default {
       }
       req.send()
     },
+
     async putContent(message, content, inline_requested, api_server) {
       let inline = inline_requested
       if (inline) {
@@ -211,6 +212,7 @@ export default {
         }
       }
     },
+
     async send(message) {
       if (this.account.type === 'ETH') {
         message = await ethereum.sign(this.account, message)
@@ -219,6 +221,7 @@ export default {
       }
       await broadcast(message, { api_server: this.api_server })
     },
+
     async forgetMessage(item) {
       const timestamp = Date.now() / 1000
       const content = {
@@ -231,7 +234,7 @@ export default {
         chain: item.chain,
         sender: item.sender,
         type: 'FORGET',
-        channel: item.channel,
+        channel: 'FORGET',
         confirmed: false,
         signature: '',
         size: 0,

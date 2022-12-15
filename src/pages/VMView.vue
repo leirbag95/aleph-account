@@ -111,7 +111,7 @@ export default {
           if (tx) {
             await messages.get_messages({
               addresses: [this.account.address],
-              hashes: [tx]
+              hashes: [tx],
             }).then(async (response) => {
               this.programs[i].storeObj = response.messages[0].content
             }).catch((err) => {

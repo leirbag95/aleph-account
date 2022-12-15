@@ -303,7 +303,7 @@ async def root():
       let message = {
         chain: 'ETH',
         time: parseInt(Date.now() / 1000),
-        channel: 'TEST',
+        channel: 'PROGRAM',
         sender: this.account.address,
         type: 'PROGRAM',
         item_hash: '',
