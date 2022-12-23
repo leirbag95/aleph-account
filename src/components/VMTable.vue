@@ -4,7 +4,7 @@
       <q-card style="min-width: 400px">
         <q-card-section>
           <div class="text-h6">Are you sure?</div>
-          <div class="text-body2 q-mt-md">You are about to delete a program</div>
+          <div class="text-body2 q-mt-md">You are about to delete the stored file containing the program script</div>
           <div class="text-body2 q-my-md">Leave a note for future reference. (Optional)</div>
           <div class="text-body2">
             <q-input ref="delete_field" standout v-model="selected_message.reason" label="Enter note" />
@@ -26,33 +26,27 @@
       </q-card>
     </q-dialog>
     <div v-if="!loading">
-      <q-expansion-item
-        v-for="item of data"
-        class="overflow-hidden rounded-borders q-mb-md"
-        :key="item?.item_hash"
-        :label="getProgramLabel(item)"
-        expand-icon-class="text-white"
+      <q-expansion-item v-for="item of data" class="overflow-hidden rounded-borders q-mb-md" :key="item?.item_hash"
+        :label="getProgramLabel(item)" expand-icon-class="text-white"
         v-show="showDeletedMessage ? item.content === null : item.content"
-        :header-class="'bg-expand text-white ' + ($q.dark.isActive ? 'bg-dark-40' : 'bg-aleph-radial')"
-        flat
-      >
-      <template v-slot:header>
-        <q-item-section avatar>
-          <q-icon :name="item.forgotten_by ? 'delete' : 'computer'" />
-        </q-item-section>
-        <q-item-section>
-          <span class="lt-md">{{getProgramLabel(item, true)}}</span>
-          <span class="gt-sm">{{getProgramLabel(item)}}</span>
-        </q-item-section>
-      </template>
-        <q-card  class="bg-card-expand rounded-borders" :bordered="!$q.dark.isActive">
+        :header-class="'bg-expand text-white ' + ($q.dark.isActive ? 'bg-dark-40' : 'bg-aleph-radial')" flat>
+        <template v-slot:header>
+          <q-item-section avatar>
+            <q-icon :name="item.forgotten_by ? 'delete' : 'computer'" />
+          </q-item-section>
+          <q-item-section>
+            <span class="lt-md">{{ getProgramLabel(item, true) }}</span>
+            <span class="gt-sm">{{ getProgramLabel(item) }}</span>
+          </q-item-section>
+        </template>
+        <q-card class="bg-card-expand rounded-borders" :bordered="!$q.dark.isActive">
           <q-card-section horizontal>
             <q-list class="col q-my-sm">
               <q-item v-show="!item.forgotten_by && !('extra_fields' in item.content) && item.content?.metadata?.name">
                 <q-item-section>
                   <q-item-label caption>Name</q-item-label>
                   <q-item-label>
-                    {{item.content?.metadata?.name}}
+                    {{ item.content?.metadata?.name }}
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -60,8 +54,17 @@
                 <q-item-section>
                   <q-item-label caption>Item Hash</q-item-label>
                   <q-item-label>
-                    {{ellipseAddress(item.item_hash)}}
-                    <q-btn @click="copyToClipboard(item.item_hash)" flat round icon="content_copy" size="sm"/>
+                    {{ ellipseAddress(item.item_hash) }}
+                    <q-btn @click="copyToClipboard(item.item_hash)" flat round icon="content_copy" size="sm" />
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item v-if="!item.forgotten_by">
+                <q-item-section>
+                  <q-item-label caption>Stored File Hash</q-item-label>
+                  <q-item-label>
+                    {{ ellipseAddress(item.storeObj?.item_hash) }}
+                    <q-btn @click="copyToClipboard(item.storeObj?.item_hash)" flat round icon="content_copy" size="sm" />
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -105,11 +108,13 @@
             <q-separator vertical />
 
             <q-card-actions vertical class="justify-start q-px-md">
-              <q-btn v-show="!item.forgotten_by" flat icon="play_arrow" align="left" label="Open app" @click="openApp(item)" />
+              <q-btn v-show="!item.forgotten_by" flat icon="play_arrow" align="left" label="Open app"
+                @click="openApp(item)" />
               <q-btn flat icon="link" align="left" label="View Explorer" @click="openExplorer(item)" />
               <q-btn v-show="!item.forgotten_by" flat icon="upload_file" align="left" label="Download Program File"
                 @click="downloadFile(item?.storeObj.item_hash)" />
-              <q-btn v-show="!item.forgotten_by" flat icon="delete" align="left" label="Delete" @click="show_delete_prompt(item)" />
+              <q-btn v-show="!item.forgotten_by" flat icon="delete" align="left" label="Delete"
+                @click="show_delete_prompt(item)" />
             </q-card-actions>
           </q-card-section>
         </q-card>
@@ -223,11 +228,12 @@ export default {
     },
 
     async forgetMessage(item) {
+      var hashes = [item.item_hash, item?.storeObj.item_hash]
       const timestamp = Date.now() / 1000
       const content = {
         address: this.account.address,
         time: timestamp,
-        hashes: [item.item_hash],
+        hashes: hashes,
         reason: item.reason?.length > 0 ? item.reason : 'None'
       }
       const message = {
@@ -247,9 +253,9 @@ export default {
 
       await this.putContent(message, content, true, 'https://api2.aleph.im').catch((err) => {
         this.$q.notify({
-                type: 'negative',
-                message: `ERROR: ${err.message}`
-              })
+          type: 'negative',
+          message: `ERROR: ${err.message}`
+        })
       })
 
       await sleep(1000)
@@ -261,13 +267,13 @@ export default {
         })
         .catch((err) => {
           this.$q.notify({
-                type: 'negative',
-                message: `ERROR: ${err.message}`
-              })
+            type: 'negative',
+            message: `ERROR: ${err.message}`
+          })
         })
     },
 
-    getProgramLabel (program, ellipse = false) {
+    getProgramLabel(program, ellipse = false) {
       if (program.content === null) {
         return ellipse ? `${ellipseAddress(program.item_hash)}` : program.item_hash
       }
