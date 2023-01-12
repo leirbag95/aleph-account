@@ -1,19 +1,7 @@
 <template>
-  <q-stepper
-        v-model="step"
-        header-nav
-        ref="stepper"
-        color="primary"
-        class="shadow-2 nftcard"
-        animated
-      >
-    <q-step
-      :name="STEP_EDITOR"
-      title="Insert your script"
-      icon="settings"
-      :done="step > STEP_EDITOR"
-      :header-nav="step > STEP_EDITOR"
-    >
+  <q-stepper v-model="step" header-nav ref="stepper" color="primary" class="shadow-2 nftcard" animated>
+    <q-step :name="STEP_EDITOR" title="Insert your script" icon="settings" :done="step > STEP_EDITOR"
+      :header-nav="step > STEP_EDITOR">
       <div class="flex">
         <span class="q-mr-xs"> Choose your language then copy and paste your code in the following text area</span>
       </div>
@@ -22,86 +10,68 @@
           <q-select standout v-model="selectedLanguage" :options="languages" label="Language">
             <template v-slot:selected-item="scope">
               {{ scope.opt.label }}
-              <q-chip
-                v-if="!scope.opt.available"
-                dense
-                square
-                color="white"
-                text-color="primary"
-                class="q-my-none q-mx-xs q-mr-none"
-              >Soon</q-chip>
+              <q-chip v-if="!scope.opt.available" dense square color="white" text-color="primary"
+                class="q-my-none q-mx-xs q-mr-none">Soon</q-chip>
             </template>
           </q-select>
         </div>
         <div class="col-12">
-          <q-tabs
-            v-model="csMethodeTab"
-            dense
-            no-caps
-            indicator-color="primary"
-            inline-label
-            align="left"
-            :breakpoint="0"
-          >
-            <q-tab name="ide" icon="code" label="Online Editor"/>
-            <q-tab name="file" icon="upload_file" label="Upload File"/>
+          <q-tabs v-model="csMethodeTab" dense no-caps indicator-color="primary" inline-label align="left"
+            :breakpoint="0">
+            <q-tab name="ide" icon="code" label="Online Editor" />
+            <q-tab name="file" icon="upload_file" label="Upload File" />
           </q-tabs>
         </div>
         <div class="col-12">
-        <q-tab-panels v-model="csMethodeTab" animated class="transparent">
-          <q-tab-panel name="ide">
-            <codemirror :options="getCodeMirrorOption(selectedLanguage)" ref="textarea" type="textarea" id="editor" outlined v-model="newProgram.code"/>
-          </q-tab-panel>
-          <q-tab-panel name="file">
-            <q-file v-model="newProgram.file" label="Your program file" accept=".py" counter outlined>
-            <template v-slot:prepend>
-              <q-icon name="upload_file" />
-            </template>
-          </q-file>
-          </q-tab-panel>
-        </q-tab-panels>
+          <q-tab-panels v-model="csMethodeTab" animated class="transparent">
+            <q-tab-panel name="ide">
+              <codemirror :options="getCodeMirrorOption(selectedLanguage)" ref="textarea" type="textarea" id="editor"
+                outlined v-model="newProgram.code" />
+            </q-tab-panel>
+            <q-tab-panel name="file">
+              <q-file v-model="newProgram.file" label="Your program file" accept=".py" counter outlined>
+                <template v-slot:prepend>
+                  <q-icon name="upload_file" />
+                </template>
+              </q-file>
+            </q-tab-panel>
+          </q-tab-panels>
         </div>
       </div>
 
       <q-stepper-navigation>
-        <q-btn :loading="loading" @click="importCode()" :disable="!selectedLanguage.available" color="primary" label="Use this code"/>
+        <q-btn :loading="loading" @click="importCode()" :disable="!selectedLanguage.available" color="primary"
+          label="Use this code" />
       </q-stepper-navigation>
     </q-step>
-    <q-step
-      :name="STEP_DONE"
-      title="Settings"
-      icon="settings"
-      :done="step > STEP_DONE"
-      :header-nav="step > STEP_DONE"
-    >
-    <div class="row q-gutter-md q-mt-md">
+    <q-step :name="STEP_DONE" title="Settings" icon="settings" :done="step > STEP_DONE" :header-nav="step > STEP_DONE">
+      <div class="row  q-mt-md">
         <div class="col-12">
-            <q-input v-model="newProgram.entrypoint" label="Your entrypoint"
-            stack-label standout class="q-my-sm" />
         </div>
         <div class="col-12">
-            <q-input v-model="newProgram.refRuntime" label="Ref of runtime"
-            stack-label standout class="q-my-sm" />
+          <q-input v-model="newProgram.entrypoint" label="Your entrypoint" stack-label standout class="q-my-sm" />
         </div>
         <div class="col-12">
-          <q-btn class="q-mr-xs" @click="addVolume(false)" icon="add" outline color="primary" label="Add Volume"/>
-          <q-btn @click="addVolume(true)" icon="add" outline color="primary" label="Add Persistent Volume"/>
+          <q-input v-model="newProgram.refRuntime" label="Ref of runtime" stack-label standout class="q-my-sm" />
         </div>
-        <q-card class="col-12 q-pa-sm" v-for="volume in newProgram.volumes" :key="volume.id">
+        <div class="col-12">
+          <q-btn class="q-mr-xs" @click="addVolume(false)" icon="add" outline color="primary" label="Add Volume" />
+          <q-btn @click="addVolume(true)" icon="add" outline color="primary" label="Add Persistent Volume" />
+        </div>
+        <div class="col-12">
+        <q-card class="col-12 q-pa-sm q-mt-md" v-for="volume in newProgram.volumes" :key="volume.id">
           <div class="q-ml-sm">
-            <div class="text-h6">{{volume.isPersistent ? 'Persistent Volume' : 'Volume'}}</div>
+            <div class="text-h6">{{ volume.isPersistent ? 'Persistent Volume' : 'Volume' }}</div>
           </div>
           <div class="col-12">
             <q-input v-model="volume.comment" placeholder="Basic description of your volume" label="Description"
               stack-label standout class="q-my-sm" />
           </div>
-          <div class="col-12" >
-            <q-input v-model="volume.mount" label="Mount"
-              stack-label standout class="q-my-sm" />
+          <div class="col-12">
+            <q-input v-model="volume.mount" label="Mount" stack-label standout class="q-my-sm" />
           </div>
           <div v-show="!volume.isPersistent">
-            <q-input v-model="volume.ref" label="Ref"
-              stack-label standout class="q-my-sm" />
+            <q-input v-model="volume.ref" label="Ref" stack-label standout class="q-my-sm" />
           </div>
           <div v-show="!volume.isPersistent">
             <span>Use latest version?</span>
@@ -109,20 +79,60 @@
             <q-radio v-model="volume.use_latest" :val="false" label="No" />
           </div>
           <div v-show="volume.isPersistent">
-            <q-input v-model="volume.name" label="Volume name"
-              stack-label standout class="q-my-sm" />
+            <q-input v-model="volume.name" label="Volume name" stack-label standout class="q-my-sm" />
           </div>
           <div v-show="volume.isPersistent">
-            <q-input v-model="volume.size_mib" label="Size (MiB)"
-              stack-label standout class="q-my-sm" />
+            <q-input v-model="volume.size_mib" label="Size (MiB)" stack-label standout class="q-my-sm" />
           </div>
           <q-card-actions align="right">
             <q-btn @click="deleteVolume(volume)" color="red" label="Delete" class="q-ml-sm" />
           </q-card-actions>
         </q-card>
       </div>
+      <div class="col-12">
+        <q-card flat class="bg-card q-mt-md">
+          <q-card-section>
+            <div class="text-bold">Program cost</div>
+          </q-card-section>
+          <q-card-section class="q-pt-none q-gutter-md">
+            <div>
+              <div class="text-subtitle-1 q-mt-sm q-mb-xs">Amount to hold</div>
+              <div class="text-caption text-grey">
+                {{ getAlephCost(exportFile?.size) }} <img src="~/assets/logo-white.svg"
+                  style="height: 1em; margin: 0 0 0 .4em;" />
+              </div>
+            </div>
+
+            <div>
+              <div class="text-subtitle-1 q-mt-sm q-mb-xs">Required storage</div>
+              <div class="text-caption text-grey">
+                {{ formatBytes(exportFile?.size) }}
+              </div>
+            </div>
+
+            <div>
+              <div class="text-subtitle-1 q-mt-sm q-mb-xs">Used storage</div>
+              <div class="text-caption text-grey">
+                {{ formatBytes(used_storage) }}
+              </div>
+            </div>
+
+            <div>
+              <div class="text-subtitle-1 q-mt-sm q-mb-xs">Available storage</div>
+              <div class="text-caption text-grey">
+                <span caption>{{ formatBytes(getUsedStorage) }} of {{ formatBytes(getAvailableStorage) }} storage will
+                  be used.</span>
+                <q-linear-progress :color="hasFreeStorage ? 'primary' : 'warning'"
+                  :value="getUsedStorage / getAvailableStorage" class="q-my-sm" rounded />
+              </div>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+      </div>
       <q-stepper-navigation>
-        <q-btn :loading="loading" color="primary" label="Deploy" @click="deploy()"/>
+        <q-btn :loading="loading" color="primary" :disable="loading || !hasFreeStorage" label="Deploy"
+          @click="deploy()" />
         <q-btn flat @click="backStep(STEP_EDITOR)" color="primary" label="Back" class="q-ml-sm" />
       </q-stepper-navigation>
     </q-step>
@@ -132,28 +142,32 @@
 <script>
 /* eslint new-cap: ["error", { "newIsCap": false }] */
 
+import { mapState } from 'vuex'
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/blackboard.css'
 import 'codemirror/theme/lucario.css'
 import 'codemirror/mode/python/python.js'
 import 'codemirror/mode/javascript/javascript.js'
+import { formatBytes, convertMiBToKB } from '../helpers/utilities'
 const shajs = require('sha.js')
 import JSZip from 'jszip'
 import { store, broadcast, storage_push, ipfs_push, nuls, nuls2, ethereum } from 'aleph-js'
 
-function sleep (ms) {
+function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 export default {
   name: 'create-new-vm',
-  props: ['account', 'api_server'],
+  props: ['account', 'api_server', 'balance_info', 'used_storage'],
   components: {
     codemirror
   },
-  data () {
+  data() {
     return {
+      formatBytes: formatBytes,
+      convertMiBToKB: convertMiBToKB,
       STEP_DONE: 2,
       STEP_EDITOR: 1,
       csMethodeTab: 'ide',
@@ -182,13 +196,34 @@ async def root():
     }
   },
   computed: {
-    getEditorElement () {
+
+    getEditorElement() {
       return document.getElementById('editor')
+    },
+
+    getAvailableStorage() {
+      return this.balance_info.ALEPH / 0.00002
+    },
+
+    hasFreeStorage() {
+      return this.getUsedStorage <= this.getAvailableStorage
+    },
+
+    getUsedStorage() {
+      var volumeStorage = 0;
+      this.newProgram.volumes.forEach(element => {
+        volumeStorage += parseInt(element.size_mib ? element.size_mib : 0)
+      });
+      return (this.exportFile?.size + this.used_storage + this.convertMiBToKB(volumeStorage))
     }
   },
   methods: {
 
-    getCodeMirrorOption (selectedLanguage) {
+    getAlephCost(memory_size) {
+      return memory_size * 0.00002
+    },
+
+    getCodeMirrorOption(selectedLanguage) {
       var cmOption = {
         tabSize: 4,
         mode: `${selectedLanguage.value}`,
@@ -203,30 +238,31 @@ async def root():
       return cmOption
     },
 
-    addVolume (isPersistent) {
-      if (isPersistent) {
-        this.newProgram.volumes.push({
-          id: (Math.random() + 1).toString(36).substring(7),
-          comment: '',
-          isPersistent: true,
-          persistence: 'host'
-        })
-      } else {
-        this.newProgram.volumes.push({
-          id: (Math.random() + 1).toString(36).substring(7),
-          comment: '',
-          isPersistent: false,
-          use_latest: false
-        })
+    addVolume(isPersistent) {
+      var volume = {
+        id: (Math.random() + 1).toString(36).substring(7),
+        comment: '',
+        isPersistent: false
       }
+      if (isPersistent) {
+        volume.persistence = 'host'
+        volume.isPersistent = true
+        volume.size_mib = 0
+      } else {
+        volume.use_latest = false
+      }
+      this.newProgram.volumes.push(volume)
     },
-    deleteVolume (volume) {
+
+    deleteVolume(volume) {
       this.newProgram.volumes.splice(this.newProgram.volumes.findIndex(v => v.id === volume.id), 1)
     },
-    backStep (step) {
+
+    backStep(step) {
       this.step = step
     },
-    async putContent (message, content, inline_requested, storage_engine, api_server) {
+
+    async putContent(message, content, inline_requested, storage_engine, api_server) {
       let inline = inline_requested
       if (inline) {
         let serialized = JSON.stringify(content)
@@ -250,7 +286,7 @@ async def root():
         message.item_hash = hash
       }
     },
-    async importCode () {
+    async importCode() {
       this.loading = true
       const zip = new JSZip()
 
@@ -264,7 +300,8 @@ async def root():
       this.step = this.STEP_DONE
       this.loading = false
     },
-    async send (message) {
+
+    async send(message) {
       if (this.account.type === 'ETH') {
         message = await ethereum.sign(this.account, message)
       } else if (this.account.type === 'NULS') {
@@ -275,7 +312,11 @@ async def root():
 
       await broadcast(message, { api_server: this.api_server })
     },
-    async deploy () {
+    async deploy() {
+      /**
+       * This function allows the user to deploy a new virtual machine on
+       * the Aleph network.
+       */
       this.loading = true
       let storeMessage = await store.submit(
         this.account.address,
@@ -370,7 +411,9 @@ async def root():
 
   .q-stepper {
     background: #1d262e;
-    .q-stepper__tab--active, .q-stepper__tab--done {
+
+    .q-stepper__tab--active,
+    .q-stepper__tab--done {
       color: white;
     }
   }

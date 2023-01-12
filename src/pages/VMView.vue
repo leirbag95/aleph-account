@@ -1,8 +1,9 @@
 <template>
   <q-page class="q-pa-md">
-        <!-- start: create vm dialog -->
+    <!-- start: create vm dialog -->
     <q-dialog v-model="showCreateProgram">
-      <CreateNewVM :account="account" :api_server="api_server" @created="uploadVM" />
+      <CreateNewVM :account="account" :api_server="api_server" @created="uploadVM" :balance_info="balance_info"
+        :used_storage="totalUsedStorage" />
     </q-dialog>
     <!-- end: create vm dialog -->
     <div v-if="account" class="q-mb-md">
@@ -17,19 +18,22 @@
       Please connect.
     </div>
     <div class="q-mb-md" v-if="account">
-    <div class="row justify-end">
-        <q-input standout v-model="search" @keydown.enter.prevent="reloadVM()" dense label="Search program" class="q-mr-md">
+      <div class="row justify-end">
+        <q-input standout v-model="search" @keydown.enter.prevent="reloadVM()" dense label="Search program"
+          class="q-mr-md">
           <template v-slot:prepend>
-          <q-icon name="search"/>
-        </template>
+            <q-icon name="search" />
+          </template>
         </q-input>
-        <q-btn icon="refresh" class="q-mr-md" color="aleph-radial" :disabled="loading" :loading="loading" label="Reload" @click="reloadVM()"/>
-        <q-btn icon="add" color="aleph-radial" label="Create program" @click="showCreateProgram = true" :disabled="balance_info.ALEPH < 1"/>
-    </div>
+        <q-btn icon="refresh" class="q-mr-md" color="aleph-radial" :disabled="loading" :loading="loading" label="Reload"
+          @click="reloadVM()" />
+        <q-btn icon="add" color="aleph-radial" label="Create program" @click="showCreateProgram = true"
+          :disabled="balance_info.ALEPH < 1" />
+      </div>
     </div>
     <div v-if="account">
       <!-- start: active vm -->
-      <VMTable :data="programs" :account="account" :loading="loading" >
+      <VMTable :data="programs" :account="account" :loading="loading" :balance_info="balance_info">
       </VMTable>
       <!-- end: actives vm -->
     </div>
@@ -63,7 +67,8 @@ export default {
       showCreateProgram: false,
       id: '',
       agentVersion: '',
-      tab: 'active'
+      tab: 'active',
+      totalUsedStorage: 0
     }
   },
   methods: {
@@ -93,6 +98,7 @@ export default {
           }).then(async (response) => {
             let storeObj = response.messages[0].content
             programsTmp[i].storeObj = storeObj
+            this.totalUsedStorage += programsTmp[i].storeObj.size
           }).catch(() => {
             this.loading = false
           })
@@ -121,4 +127,5 @@ export default {
 </script>
 
 <style lang="scss">
+
 </style>
